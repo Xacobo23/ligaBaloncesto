@@ -7,6 +7,7 @@ public class LigaAcb {
         String str = sc.nextLine();
         Clasificacion clasificacion = new Clasificacion(str);
         ClasificacionFileDao clasificacionDAO = new ClasificacionFileDao("./");
+        boolean continuar = true;
 
 
 
@@ -15,13 +16,17 @@ public class LigaAcb {
             System.out.println("2. Mostrar clasificación");
             System.out.println("3. Guardar clasificación");
             System.out.println("4. Cargar clasificación");
-            System.out.println("5. Salir");
+            System.out.println("5. Borrar equipo");
+            System.out.println("6. Vaciar clasificación");
+            System.out.println("7. Salir");
             System.out.print("Seleccione una opción: ");
             int opcion = sc.nextInt();
             sc.nextLine();
 
             switch (opcion) {
                 case 1:
+                    System.out.println();
+                    System.out.println();
                     System.out.print("Nombre del equipo: ");
                     String nombre = sc.nextLine();
                     System.out.print("Victorias: ");
@@ -32,13 +37,19 @@ public class LigaAcb {
                     int puntosAfavor = sc.nextInt();
                     System.out.print("Puntos en contra: ");
                     int puntosEnContra = sc.nextInt();
+                    System.out.println();
+                    System.out.println();
 
                     Equipo equipo = new Equipo(nombre, victorias, derrotas, puntosAfavor, puntosEnContra);
                     clasificacion.addEquipo(equipo);
                     break;
 
                 case 2:
+                    System.out.println();
+                    System.out.println();
                     System.out.println(clasificacion);
+                    System.out.println();
+                    System.out.println();
                     break;
 
                 case 3:
@@ -60,9 +71,49 @@ public class LigaAcb {
                     break;
 
                 case 5:
-                    System.out.println("¿Está seguro de que quiere salir? (s/n)");
+                    System.out.println();
+                    System.out.println();
+                    System.out.print("Introduce el nombre del equipo a borrar: ");
+                    String equipoABorrar = sc.nextLine();
+                    boolean equipoEliminado = clasificacion.removeEquipo(equipoABorrar);
+                    clasificacionDAO.save(clasificacion);
+                    if (equipoEliminado) {
+                        System.out.println("El equipo " + equipoABorrar + " ha sido eliminado.");
+                    } else {
+                        System.out.println("No se ha encontrado el equipo " + equipoABorrar + ".");
+                    }
+                    System.out.println();
+                    System.out.println();
+                    break;
+
+                case 6:
+                    System.out.println();
+                    System.out.println();
+
+                    System.out.print("¿Estás seguro que deseas vaciar toda la clasificación? (s/n): ");
                     String confirmacion = sc.nextLine();
-                    if (confirmacion.equalsIgnoreCase("s")) {
+                    if (confirmacion.equalsIgnoreCase("S")) {
+                        if (clasificacion.removeAllEquipos()) {
+                            System.out.println("La clasificación ha sido eliminada.");
+                        } else {
+                            System.out.println("La clasificación ya estaba vacía.");
+                        }
+                    } else {
+                        System.out.println("Operación cancelada.");
+                    }
+                    clasificacionDAO.save(clasificacion);
+
+                    System.out.println();
+                    System.out.println();
+                    break;
+
+                case 7:
+                    System.out.println();
+                    System.out.println();
+
+                    System.out.println("¿Está seguro de que quiere salir? (s/n)");
+                    String salida = sc.nextLine();
+                    if (salida.equalsIgnoreCase("s")) {
                         System.exit(0);
                     }
                     break;

@@ -37,13 +37,15 @@ public class ClasificacionFileDao implements Dao<Clasificacion, String> {
     }
 
     @Override
-    public boolean deleteById(String competicion) {
-        return new EquipoFileDao(ruta + competicion + ".dat").deleteAll();
+    public boolean deleteAll() {
+        EquipoFileDao equipoDao = new EquipoFileDao(ruta);
+        return equipoDao.deleteAll();
     }
 
     @Override
-    public boolean deleteAll() {
-        throw new UnsupportedOperationException("No se ha implementado deleteAll para clasificaciones.");
+    public boolean deleteById(String equipoId) {
+        EquipoFileDao equipoDao = new EquipoFileDao(ruta);
+        return equipoDao.deleteById(equipoId);
     }
 
     @Override

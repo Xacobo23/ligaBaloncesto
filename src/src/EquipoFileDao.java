@@ -42,6 +42,8 @@ public class EquipoFileDao implements Dao<Equipo, String> {
         return new  TreeSet<Equipo>(equipos);
     }
 
+
+
     @Override
     public boolean save(Equipo equipo) {
         boolean append = Files.exists(path);
@@ -67,13 +69,36 @@ public class EquipoFileDao implements Dao<Equipo, String> {
     }
 
     @Override
-    public boolean deleteById(String id) {
-        HashSet<Equipo> equipos = new HashSet<>(getAll());
-        if (equipos.removeIf(e -> e.getNombre().equalsIgnoreCase(id))) {
-            return saveAll(equipos);
+    public boolean deleteById(String equipoId) {
+        Set<Equipo> equipos = getAll();  // Recuperamos todos los equipos
+        boolean equipoEncontrado = false;
+
+        // Buscamos el equipo a eliminar
+        for (Equipo equipo : equipos) {
+            if (equipo.getNombre().equalsIgnoreCase(equipoId)) {
+                equipoEncontrado = true;
+                equipos.remove(equipo); // Eliminamos el equipo de la lista
+                break;
+            }
         }
-        return false;
+
+        if (equipoEncontrado) {
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path.toFile()))) {
+                for (Equipo equipo : equipos) {
+                    oos.writeObject(equipo);  // Guardamos cada equipo de nuevo
+                }
+                return true;  // Eliminación exitosa
+            } catch (IOException e) {
+                System.out.println("Error al guardar la lista actualizada de equipos.");
+                return false;
+            }
+        } else {
+            System.out.println("No se ha encontrado el equipo " + equipoId + ".");
+            return false;
+        }
     }
+
+
 
     @Override
     public boolean deleteAll() {
@@ -81,7 +106,7 @@ public class EquipoFileDao implements Dao<Equipo, String> {
             Files.deleteIfExists(path);
             return true;
         } catch (IOException e) {
-            System.out.println("Error al eliminar archivo: " + e.getMessage());
+            System.out.println("Error al eliminar el archivo de la clasificación.");
             return false;
         }
     }

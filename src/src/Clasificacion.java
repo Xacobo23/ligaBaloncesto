@@ -1,4 +1,8 @@
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
@@ -49,8 +53,36 @@ public class Clasificacion implements Serializable {
         }
     }
 
-    public void removeEquipo(Equipo equipo) {
-        equipos.remove(equipo);
+    public boolean removeEquipo(String nombreEquipo) {
+        Equipo equipoABorrar = equipos.stream()
+                .filter(e -> e.getNombre().equalsIgnoreCase(nombreEquipo))
+                .findFirst()
+                .orElse(null);
+
+        if (equipoABorrar != null) {
+            equipos.remove(equipoABorrar);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean removeAllEquipos() {
+        if (!equipos.isEmpty()) {
+            equipos.clear();
+
+            try {
+                Path path = Paths.get(competicion);
+                Files.deleteIfExists(path);
+                System.out.println("Archivo de clasificación eliminado: " + competicion);
+            } catch (IOException e) {
+                System.out.println("No se pudo eliminar el archivo de clasificación.");
+            }
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
